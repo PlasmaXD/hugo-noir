@@ -173,4 +173,56 @@
         });
     });
 </script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var isDark = document.documentElement.classList.contains('dark');
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: isDark ? 'dark' : 'default',
+            securityLevel: 'loose'
+        });
+
+        // Convert ```mermaid code blocks to rendered diagrams
+        document.querySelectorAll('pre code.language-mermaid').forEach(function (code) {
+            var definition = code.textContent;
+            var pre = code.parentNode;
+            var mermaidDiv = document.createElement('div');
+            mermaidDiv.className = 'mermaid';
+            mermaidDiv.textContent = definition;
+            pre.parentNode.replaceChild(mermaidDiv, pre);
+        });
+
+        mermaid.init(undefined, document.querySelectorAll('.mermaid'));
+    });
+</script>
+
+<script type="module">
+    import { D2 } from 'https://esm.sh/@terrastruct/d2@0.1.33';
+
+    var d2Blocks = document.querySelectorAll('pre code.language-d2');
+    if (d2Blocks.length > 0) {
+        var d2 = new D2();
+        d2Blocks.forEach(async function (code) {
+            var definition = code.textContent;
+            var pre = code.parentNode;
+
+            // Show loading state
+            var container = document.createElement('div');
+            container.className = 'd2-diagram';
+            container.style.textAlign = 'center';
+            container.style.padding = '1rem';
+            container.innerHTML = '<span style="color:#a1a1aa;">D2 Loading...</span>';
+            pre.parentNode.replaceChild(container, pre);
+
+            try {
+                var result = await d2.compile(definition);
+                var svg = await d2.render(result.diagram, result.renderOptions);
+                container.innerHTML = svg;
+            } catch (err) {
+                container.innerHTML = '<pre style="color:#ef4444;">D2 Error: ' + err.message + '</pre>';
+            }
+        });
+    }
+</script>
 {{ end }}
