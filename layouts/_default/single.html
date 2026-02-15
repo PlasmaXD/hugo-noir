@@ -197,32 +197,43 @@
     });
 </script>
 
-<script type="module">
-    import { D2 } from 'https://esm.sh/@terrastruct/d2@0.1.33';
-
-    var d2Blocks = document.querySelectorAll('pre code.language-d2');
-    if (d2Blocks.length > 0) {
-        var d2 = new D2();
-        d2Blocks.forEach(async function (code) {
+<script>
+    // D2 diagram rendering via kroki.io (free, no WASM needed)
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('pre code.language-d2').forEach(function (code) {
             var definition = code.textContent;
             var pre = code.parentNode;
 
-            // Show loading state
             var container = document.createElement('div');
             container.className = 'd2-diagram';
             container.style.textAlign = 'center';
             container.style.padding = '1rem';
-            container.innerHTML = '<span style="color:#a1a1aa;">D2 Loading...</span>';
+            container.innerHTML = '<span style="color:#a1a1aa;">D2 rendering...</span>';
             pre.parentNode.replaceChild(container, pre);
 
-            try {
-                var result = await d2.compile(definition);
-                var svg = await d2.render(result.diagram, result.renderOptions);
-                container.innerHTML = svg;
-            } catch (err) {
-                container.innerHTML = '<pre style="color:#ef4444;">D2 Error: ' + err.message + '</pre>';
-            }
+            // Render via kroki.io POST API
+            fetch('https://kroki.io/d2/svg', {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain' },
+                body: definition
+            })
+                .then(function (res) {
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    return res.text();
+                })
+                .then(function (svg) {
+                    container.innerHTML = svg;
+                    // Adapt SVG to container width
+                    var svgEl = container.querySelector('svg');
+                    if (svgEl) {
+                        svgEl.style.maxWidth = '100%';
+                        svgEl.style.height = 'auto';
+                    }
+                })
+                .catch(function (err) {
+                    container.innerHTML = '<pre style="color:#ef4444;">D2 Error: ' + (err.message || err) + '</pre>';
+                });
         });
-    }
+    });
 </script>
 {{ end }}
