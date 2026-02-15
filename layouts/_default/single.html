@@ -16,7 +16,7 @@
         </div>
         {{ end }}
 
-        <div class="prose prose-invert max-w-none">
+        <div class="prose dark:prose-invert max-w-none">
             {{ .Content }}
         </div>
     </div>
@@ -83,6 +83,62 @@
     .copy-btn.copied {
         color: #4ade80;
         border-color: #4ade80;
+    }
+
+    /* --- Table styling --- */
+    .prose table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1.25rem 0;
+        font-size: 0.9rem;
+    }
+
+    .prose th,
+    .prose td {
+        border: 1px solid #3f3f46;
+        padding: 0.6rem 1rem;
+        text-align: left;
+    }
+
+    .prose th {
+        background: #27272a;
+        font-weight: 600;
+        color: #e4e4e7;
+    }
+
+    .prose tr:nth-child(even) {
+        background: rgba(39, 39, 42, 0.3);
+    }
+
+    /* Light mode overrides */
+    html:not(.dark) .prose th {
+        background: #e5e7eb;
+        color: #1f2937;
+    }
+
+    html:not(.dark) .prose th,
+    html:not(.dark) .prose td {
+        border-color: #d1d5db;
+    }
+
+    html:not(.dark) .prose tr:nth-child(even) {
+        background: #f3f4f6;
+    }
+
+    /* Light mode code blocks */
+    html:not(.dark) .prose pre {
+        background: #f3f4f6;
+        border-color: #d1d5db;
+    }
+
+    html:not(.dark) .prose pre code {
+        color: #1f2937;
+    }
+
+    html:not(.dark) .prose :not(pre)>code {
+        background: #e5e7eb;
+        border-color: #d1d5db;
+        color: #9333ea;
     }
 </style>
 
